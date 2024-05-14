@@ -3,13 +3,13 @@
 
     <h6 class="text-h5 text-weight-bolder no-margin">{{ groceryList.name }}</h6>
 
-    <list-and-tags :tag="groceryList.tag" :checked-items="groceryList.checkedItems"
-                   :total-items="groceryList.totalItems"/>
+    <list-and-tags :tag="groceryList.tag" :checked-items="groceryListCompleted"
+                   :total-items="groceryItemList.filter(item => !item.deleted).length"/>
 
     <q-card-section class="no-padding q-mt-md" style="margin-bottom: 50px;">
       <q-card-actions class="no-padding">
-        <div class="full-width">
-          <q-list separator>
+        <div class="full-width full-height">
+          <q-list separator v-if="groceryItemList.length">
             <transition-group
               appear
               enter-active-class="animated backInLeft"
@@ -52,7 +52,7 @@
                         {{ item.name }}</p>
                     </q-item-section>
 
-                    <q-item-section class="text-right" v-if="item.unit">
+                    <q-item-section class="text-right" v-if="item.unit || item.quantity">
                       {{ item.quantity }} {{ item.unit }}
                     </q-item-section>
                   </q-item>
@@ -60,6 +60,22 @@
             </transition-group>
 
           </q-list>
+
+          <div v-else class="text-center q-pt-xl">
+            <q-img src="assets/check-list.svg" width="37px"/>
+
+            <h4 class="text-h5 text-weight-bold no-margin">Add item to your list</h4>
+            <p class="text-body2 text-grey-7">Your smart shopping list will shown here. start by creating a new list</p>
+          </div>
+
+          <q-btn @click="addItem"
+                 v-if="groceryItemList.length === 0"
+                 class="bg-primary full-width border-rounded"
+                 style="padding: 13px 0"
+                 text-color="white"
+                 icon="o_add_box"
+                 no-caps
+                 label="Add a new Item"/>
         </div>
       </q-card-actions>
     </q-card-section>
@@ -67,7 +83,7 @@
     <q-space ref="itemsScroll"/>
 
     <q-page-sticky position="bottom" :offset="[18, 18]" class="q-mb-md">
-      <q-btn @click="addItem" class="bg-primary full-width border-rounded" style="padding: 13px 0" text-color="white"
+      <q-btn v-if="groceryItemList.length" @click="addItem" class="bg-primary full-width border-rounded" style="padding: 13px 0" text-color="white"
              icon="o_add_box" no-caps label="Add a new Item"/>
     </q-page-sticky>
 
@@ -75,75 +91,77 @@
 
   <dialog-add-items @item="addItems" input="" v-model="dialog"/>
 
-<!--  <q-dialog v-model="dialog" position="bottom" @hide="hideDialog">-->
-<!--    <q-card style="width: 350px">-->
+  <q-dialog v-model="dialogEdit" position="bottom" @hide="hideDialog">
+    <q-card style="width: 350px">
 
-<!--      <q-card-section class="q-mb-md row items-center no-wrap no-margin" style="padding-bottom: 0">-->
-<!--        <p class="no-padding no-margin title">{{ addingItem ? 'Add2' : 'Edit' }} an item </p>-->
-<!--        <q-space/>-->
-<!--        <q-btn size="sm" icon="close" class="icon-bubble active" @click="dialog = false" title="close"/>-->
-<!--      </q-card-section>-->
+      <q-card-section class="q-mb-md row items-center no-wrap no-margin" style="padding-bottom: 0">
+        <p class="no-padding no-margin title">{{ addingItem ? 'Add' : 'Edit' }} an item </p>
+        <q-space/>
+        <q-btn size="sm" icon="close" class="icon-bubble active" @click="dialogEdit = false" title="close"/>
+      </q-card-section>
 
 
-<!--      <q-card-section>-->
-<!--        <q-input bg-color="white" autofocus v-model="selectedItem.name" outlined class="full-width q-mb-sm"/>-->
+      <q-card-section>
+        <q-input bg-color="white" autofocus v-model="selectedItem.name" outlined class="full-width q-mb-sm"/>
 
-<!--        <q-input bg-color="white" v-model="selectedItem.quantity" label="Quantity" outlined>-->
-<!--          <template v-slot:before>-->
-<!--            <q-btn round dense flat icon="remove" @click="selectedItem.quantity <= 1 ? '' : selectedItem.quantity&#45;&#45;"/>-->
-<!--          </template>-->
+        <q-input bg-color="white" v-model="selectedItem.quantity" label="Quantity" outlined>
+          <template v-slot:before>
+            <q-btn round dense flat icon="remove" @click="selectedItem.quantity <= 1 ? '' : selectedItem.quantity--"/>
+          </template>
 
-<!--          <template v-slot:after>-->
-<!--            <q-btn round dense flat icon="add" @click="selectedItem.quantity++"/>-->
-<!--          </template>-->
-<!--        </q-input>-->
-<!--      </q-card-section>-->
+          <template v-slot:after>
+            <q-btn round dense flat icon="add" @click="selectedItem.quantity++"/>
+          </template>
+        </q-input>
+      </q-card-section>
 
-<!--      <q-card-section class="flex items-center justify-center no-padding q-mb-sm">-->
-<!--        <q-card-actions class="row items-center no-wrap no-margin no-padding">-->
-<!--          <q-item-label class="q-mr-sm">Unit:</q-item-label>-->
+      <q-card-section class="flex items-center justify-center no-padding q-mb-sm">
+        <q-card-actions class="row items-center no-wrap no-margin no-padding">
+          <q-item-label class="q-mr-sm">Unit:</q-item-label>
 
-<!--          <q-btn-->
-<!--            size="sm"-->
-<!--            no-caps-->
-<!--            class="text-weight-bold text-body1"-->
-<!--            :color="selectedItem.unit === unit ? 'primary' : 'secondary'"-->
-<!--            v-for="(unit, index) in units"-->
-<!--            :key="index"-->
-<!--            @click="selectedItem.unit === unit"-->
-<!--            :label="unit"/>-->
+          <q-btn
+            size="sm"
+            no-caps
+            class="text-weight-bold text-body1"
+            :color="selectedItem.unit === unit ? 'primary' : 'secondary'"
+            v-for="(unit, index) in units"
+            :key="index"
+            @click="selectedItem.unit = unit"
+            :label="unit"/>
 
-<!--        </q-card-actions>-->
-<!--      </q-card-section>-->
-<!--    </q-card>-->
-<!--  </q-dialog>-->
+        </q-card-actions>
+      </q-card-section>
+
+      <q-card-section class="text-center">
+        <q-btn color="primary" rounded label="Add item" @click="hideDialog" />
+      </q-card-section>
+
+    </q-card>
+  </q-dialog>
 </template>
 
 <script setup>
 import {useRoute} from "vue-router";
 import ListAndTags from "components/ListAndTags.vue";
-import {onMounted, ref} from "vue";
+import {computed, onMounted, ref} from "vue";
 import {LocalStorage, scroll} from 'quasar'
 import DialogAddItems from "components/DialogAddItems.vue";
-import { inject } from 'vue'
+import {finalize, findObjectKeyInArray} from "src/helpers/helpers";
 
-const bus = inject('bus') // inside setup()
-const { setVerticalScrollPosition, getScrollTarget } = scroll
 const route = useRoute()
 const listID = route.params.id;
+
+const { getScrollTarget, setVerticalScrollPosition } = scroll
 const itemRefs = ref([])
 const itemsScroll = ref(null);
-
-const tab = ref('popular')
 const dialog = ref(false);
-
+const dialogEdit = ref(false);
 const addingItem = ref(false);
-
 const units = ['g', 'kg', 'ml', 'l'];
 
 const selectedItem = ref({
-  id: 1,
-  name: "Banane",
+  id: 0,
+  name: '',
   done: false,
   quantity: 1,
   unit: null,
@@ -154,50 +172,23 @@ const groceryList = {
   id: 1,
   name: "Grocery List",
   tag: "kitchen items",
-  totalItems: 7,
-  checkedItems: 1,
   sharedList: ['/assets/avatar.svg', '/assets/avatar.svg'],
   otherPeople: 15,
 };
 
-const groceryItemList = ref([
-  {
-    id: 1,
-    name: "Banane",
-    quantity: 1,
-    unit: null,
-    done: true,
-    deleted: false,
-  },
-  {
-    id: 2,
-    name: "Ceapa",
-    quantity: 1,
-    unit: null,
-    done: false,
-    deleted: false,
-  },
-  {
-    id: 3,
-    name: "Rosii",
-    quantity: 1,
-    unit: null,
-    done: false,
-    deleted: false,
-  }
-]);
+const groceryItemList = ref([]);
 
 function editItem(item) {
-  dialog.value = true;
+  dialogEdit.value = true;
 
   selectedItem.value = item;
 }
 
 function onRight(index) {
   setTimeout(() => {
-    finalize(itemRefs.value[index].reset, 200);
+    finalize(itemRefs.value[index].reset, 100);
     groceryItemList.value[index].deleted = true;
-  }, 500)
+  }, 300)
 }
 
 onMounted(() => console.log(itemRefs.value))
@@ -205,57 +196,83 @@ onMounted(() => console.log(itemRefs.value))
 function onLeft(index) {
   groceryItemList.value[index].done = true;
 
-  finalize(itemRefs.value[index].reset);
+  finalize(itemRefs.value[index].reset, 300);
 }
 
-function addItem(item) {
+function addItem() {
   addingItem.value = true;
 
-  dialog.value = true;
+  if (LocalStorage.getItem('useAddList') === true) {
+    dialog.value = true;
+    return;
+  }
+
+  selectedItem.value.id = 0;
+  dialogEdit.value = true;
 }
 
 function hideDialog() {
-  if (addingItem.value && selectedItem.value.name.length > 0) {
-    groceryItemList.value.push(selectedItem.value)
+
+  let existsItem = findObjectKeyInArray(groceryItemList.value, selectedItem.value, 'id');
+
+  if (existsItem) {
+    existsItem.quantity = selectedItem.value.quantity;
+  }
+
+
+  if (selectedItem.value.id === 0) {
+
+    addItems(selectedItem.value)
 
     if (LocalStorage.getItem('scrollToBottom')) {
       const el = itemsScroll.value.$el;
       const target = getScrollTarget(el)
       const offset = el.offsetTop
-      const duration = 1000
-      console.log(target, offset, duration);
+      const duration = 500
       setVerticalScrollPosition(target, offset, duration)
     }
-
   }
 
-  addingItem.value = false;
-  dialog.value = false;
+  selectedItem.value = {
+    id: 0,
+    name: '',
+    done: false,
+    quantity: 1,
+    unit: null,
+    deleted: false,
+  };
+
+  dialogEdit.value = false;
 }
 
-
 function addItems(item) {
+  let exists = findObjectKeyInArray(groceryItemList.value, item, 'name')
 
-  console.log(item);
+  if (exists !== undefined) {
+    exists.quantity = item.quantity
+
+    if (exists.quantity === 0) {
+      groceryItemList.value[groceryItemList.value.length - 1].deleted = true;
+    }
+
+    return;
+  }
 
   selectedItem.value = {
-    id: groceryItemList.value[groceryItemList.value.length - 1].id + 1,
-    name: item.name,
+    id: groceryItemList.value.length === 0 ? 1 : groceryItemList.value[groceryItemList.value.length - 1].id + 1,
+    name: item.name.trim(),
     done: false,
     quantity: 1,
     unit: null,
     deleted: false,
   }
 
-
   if (selectedItem.value.name.length > 0) {
     groceryItemList.value.push(selectedItem.value)
   }
 }
 
-function finalize(reset, timeout = 1000) {
-  setTimeout(() => {
-    reset()
-  }, timeout)
-}
+const groceryListCompleted = computed(() => {
+  return groceryItemList.value.filter(item => item.done && !item.deleted).length
+})
 </script>

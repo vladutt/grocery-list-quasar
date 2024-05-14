@@ -24,7 +24,8 @@ module.exports = configure(function (/* ctx */) {
       'i18n',
       'axios',
       'addressbar-color',
-      'bus'
+      'bus',
+      'default-options'
     ],
 
     // https://v2.quasar.dev/quasar-cli-vite/quasar-config-js#css

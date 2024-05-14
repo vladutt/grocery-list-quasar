@@ -14,7 +14,7 @@
               <q-item clickable v-close-popup>
                 <q-item-section>
                   <q-toggle
-                    @click="changeState"
+                    @click="changeState('scrollToBottom')"
                     v-model="options.scrollToBottom"
                     label="Scroll to bottom"
                     left-label
@@ -24,15 +24,15 @@
 
               <q-item clickable v-close-popup>
                 <q-item-section>
-                  <q-item-label>Videos</q-item-label>
+                  <q-toggle
+                    @click="changeState('useAddList')"
+                    v-model="options.useAddList"
+                    label="Use add List"
+                    left-label
+                  />
                 </q-item-section>
               </q-item>
 
-              <q-item clickable v-close-popup>
-                <q-item-section>
-                  <q-item-label>Articles</q-item-label>
-                </q-item-section>
-              </q-item>
             </q-list>
           </q-btn-dropdown>
         </div>
@@ -51,6 +51,7 @@ import {LocalStorage, useQuasar} from "quasar";
 import SharedPersons from "components/SharedPersons.vue";
 import {useRouter} from "vue-router";
 import {ref} from "vue";
+import {staticOptions} from "src/static/settings.js";
 
 
 defineOptions({
@@ -59,13 +60,11 @@ defineOptions({
 })
 const router = useRouter()
 
-function changeState() {
-  LocalStorage.set("scrollToBottom", options.value.scrollToBottom)
+function changeState(key) {
+  LocalStorage.set(key, options.value[key])
 }
 
-const options = ref({
-  scrollToBottom: true
-});
+const options = ref(staticOptions);
 
 const q = useQuasar();
 q.dark.set(false)

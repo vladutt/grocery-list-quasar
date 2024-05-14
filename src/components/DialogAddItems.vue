@@ -6,47 +6,149 @@ const emit = defineEmits(['item']);
 
 
 const tab = ref('popular')
-const name = ref('')
+const search = ref('')
 
-const items = ['Branza', 'Carne', 'Lapte', 'Oua'];
+const items = ref([
+  {
+    name: 'Rosii',
+    quantity: 0,
+  },
+  {
+    name: 'Castraveti',
+    quantity: 0,
+  },
+  {
+    name: 'Conopida',
+    quantity: 0,
+  },
+  {
+    name: 'Sarmale',
+    quantity: 0,
+  },
+  {
+    name: 'Rosii',
+    quantity: 0,
+  },
+  {
+    name: 'Castraveti',
+    quantity: 0,
+  },
+  {
+    name: 'Conopida',
+    quantity: 0,
+  },
+  {
+    name: 'Sarmale',
+    quantity: 0,
+  },
+  {
+    name: 'Rosii',
+    quantity: 0,
+  },
+  {
+    name: 'Castraveti',
+    quantity: 0,
+  },
+  {
+    name: 'Conopida',
+    quantity: 0,
+  },
+  {
+    name: 'Sarmale',
+    quantity: 0,
+  },
+  {
+    name: 'Rosii',
+    quantity: 0,
+  },
+  {
+    name: 'Castraveti',
+    quantity: 0,
+  },
+  {
+    name: 'Conopida',
+    quantity: 0,
+  },
+  {
+    name: 'Sarmale',
+    quantity: 0,
+  },
+  {
+    name: 'Rosii',
+    quantity: 0,
+  },
+  {
+    name: 'Castraveti',
+    quantity: 0,
+  },
+  {
+    name: 'Conopida',
+    quantity: 0,
+  },
+  {
+    name: 'Sarmale',
+    quantity: 0,
+  },
+  {
+    name: 'Rosii',
+    quantity: 0,
+  },
+  {
+    name: 'Castraveti',
+    quantity: 0,
+  },
+  {
+    name: 'Conopida',
+    quantity: 0,
+  },
+  {
+    name: 'Sarmale',
+    quantity: 0,
+  },
+  {
+    name: 'Rosii',
+    quantity: 0,
+  },
+  {
+    name: 'Castraveti',
+    quantity: 0,
+  },
+  {
+    name: 'Conopida',
+    quantity: 0,
+  },
+  {
+    name: 'Sarmale',
+    quantity: 0,
+  },
+]);
 
-const item = {
-  id: 0,
-  name: "",
-  done: false,
-  quantity: 1,
-  unit: null,
-  deleted: false,
-};
+function addItem(index) {
+  items.value[index].quantity++;
+  emit('item', items.value[index]);
+}
 
-
-
-function addItem(selectedItemName = '') {
-
-  if (selectedItemName.length) {
-    item.name = selectedItemName;
-  }
-
-  emit('item', item);
+function removeItem(index) {
+  items.value[index].quantity--;
+  emit('item', items.value[index]);
 }
 </script>
 
 <template>
   <q-dialog
     v-model="dialog"
-    persistent
     :maximized="true"
     transition-show="slide-up"
     transition-hide="slide-left"
+    class="bg-white q-mt-md"
   >
-    <q-card class="text-white">
-      <q-bar class="bg-white q-mt-sm">
+
+    <q-card class="text-white" >
+      <q-bar class="bg-white" style="position: fixed; z-index: 99; padding: 27px 10px;">
         <q-btn class="bg-primary" dense flat icon="arrow_back" v-close-popup></q-btn>
         <q-space></q-space>
-        <q-input outlined autofocus class="full-width" bg-color="white" v-model="item.name" dense/>
-      </q-bar>
+        <q-input outlined autofocus class="full-width" bg-color="white" v-model="search" dense/>
 
-      <q-card-section>
         <q-tabs
           v-model="tab"
           dense
@@ -54,31 +156,45 @@ function addItem(selectedItemName = '') {
           active-color="primary"
           indicator-color="primary"
           align="justify"
+
         >
-          <q-tab name="popular" label="Popular" />
-          <q-tab name="recent" label="Recent" />
+          <q-tab name="popular" label="Popular"/>
+          <q-tab name="recent" label="Recent"/>
         </q-tabs>
+      </q-bar>
 
-        <q-separator />
+      <q-card-section>
 
-        <q-tab-panels v-model="tab" animated>
+
+        <q-tab-panels v-model="tab" animated class="q-mt-xl">
           <q-tab-panel name="popular" class="no-padding">
+            <q-card-section class="no-padding scroll">
+
             <div class="text-black">
 
-              <q-card-section class="no-padding">
-                  <q-item v-for="(item, index) in items" :key="index" class="no-padding">
-                    <q-item-section class="row no-wrap">
+<!--                <q-scroll-area class="full-height full-width">-->
 
-                      <div class="text-weight-bold">
-                        <q-btn icon="add" size="sm" color="primary" round  @click="addItem(item)"/>
-                        {{ item }}
+                <q-item v-for="(item, index) in items" :key="index" class="no-padding">
+                  <q-item-section class="row no-wrap">
+
+                    <div class="text-weight-bold row items-center">
+                      <q-btn icon="add" class="q-mr-sm" size="sm" color="primary" round @click="addItem(index)"/>
+                      {{ item.name }}
+                      <q-space/>
+                      <div v-if="item.quantity">
+                        {{ item.quantity > 0 ? item.quantity : '' }}
+                        <q-btn icon="remove" text-color="red" class="q-ml-sm" size="sm"  round @click="removeItem(index)"/>
                       </div>
+                    </div>
 
-                    </q-item-section>
-                  </q-item>
-              </q-card-section>
+                  </q-item-section>
+                </q-item>
+
+<!--                </q-scroll-area>-->
 
             </div>
+            </q-card-section>
+
           </q-tab-panel>
 
           <q-tab-panel name="recent">
@@ -91,3 +207,9 @@ function addItem(selectedItemName = '') {
     </q-card>
   </q-dialog>
 </template>
+
+<style>
+.q-item {
+  min-height: 37px;
+}
+</style>

@@ -1,5 +1,11 @@
 <script setup>
+import {computed} from "vue";
+
 const props = defineProps({checkedItems: Number, totalItems: Number, tag: String})
+
+let progress = computed(() => {
+  return props.checkedItems/props.totalItems
+})
 </script>
 
 <template>
@@ -14,7 +20,7 @@ const props = defineProps({checkedItems: Number, totalItems: Number, tag: String
       <div id="tag" class="text-weight-bold">
         <q-icon style="color: #667085" size="xs" name="o_sell"/> {{ tag }}
       </div>
-
+      <q-linear-progress :value="progress" rounded color="accent" class="q-mt-sm" />
     </q-card-actions>
   </q-card-section>
 </template>

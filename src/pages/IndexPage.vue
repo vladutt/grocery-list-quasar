@@ -46,7 +46,7 @@
   </div>
 
   <div class="absolute-bottom-right q-mb-xl q-mr-md" style="position: fixed">
-    <q-btn elevated size="26px" class="q-pa-md plus-btn shadow-box shadow-4" icon="add" @click="dialog = !dialog"></q-btn>
+    <q-btn elevated size="20px" class="q-pa-md plus-btn shadow-box shadow-4" icon="add" @click="dialog = !dialog"></q-btn>
   </div>
 
 
@@ -61,7 +61,7 @@
 
       <q-card-section>
         <div>
-          <q-input bg-color="white" autofocus v-model="newList.name" input-style="border-radius: 20px" outlined label="List name*" class="full-width"/>
+          <q-input bg-color="white" autofocus v-model="newList.name" input-style="border-radius: 20px" outlined label="List name*" class="full-width q-mb-sm"/>
           <q-input bg-color="white" v-model="newList.tag" input-style="border-radius: 20px" outlined label="List tag" class="full-width q-mt-sm"/>
         </div>
 
@@ -94,7 +94,7 @@ const shoppingLists = [
     tag: "kitchen items",
     totalItems: 7,
     checkedItems: 1,
-    sharedList: ['/assets/avatar.svg', '/assets/avatar.svg'],
+    sharedList: [],
     otherPeople: 15,
   },
   {
