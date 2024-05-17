@@ -6,8 +6,8 @@
           <img src="/assets/avatar.svg" alt=""/>
 
           <div class="q-ml-sm text-black">
-            <p class="no-margin text-bold">Alexandra Sirbu</p>
-            <p class="no-margin text-grey-7 text-caption">alexandra.sirbu@gmail.com</p>
+            <p class="no-margin text-bold">{{ user.name }}</p>
+            <p class="no-margin text-grey-7 text-caption">{{ user.email }}</p>
           </div>
         </div>
 
@@ -32,12 +32,15 @@
 </template>
 
 <script setup>
-import {useQuasar} from "quasar";
+import {LocalStorage, useQuasar} from "quasar";
+import {onMounted, ref} from "vue";
 
 defineOptions({
   // eslint-disable-next-line vue/multi-word-component-names
   name: 'Layout'
 })
+
+let user = ref(LocalStorage.getItem('user'));
 
 const q = useQuasar();
 q.dark.set(false)

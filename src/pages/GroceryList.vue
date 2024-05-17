@@ -44,7 +44,7 @@
                     style="background: #FCFCFD; border: 1px solid #EAECF0"
                   >
                     <q-item-section avatar class="no-padding" style="min-width: 0">
-                      <q-checkbox v-model="item.done" color="primary"/>
+                      <q-checkbox v-model="item.done" :true-value="1" :false-value="0" color="primary"/>
                     </q-item-section>
 
                     <q-item-section>
@@ -102,7 +102,7 @@
 
 
       <q-card-section>
-        <q-input bg-color="white" autofocus v-model="selectedItem.name" outlined class="full-width q-mb-sm"/>
+        <q-input autofocus v-model="selectedItem.name" outlined class="full-width q-mb-sm"/>
 
         <q-input bg-color="white" v-model="selectedItem.quantity" label="Quantity" outlined>
           <template v-slot:before>
@@ -144,12 +144,15 @@
 import {useRoute} from "vue-router";
 import ListAndTags from "components/ListAndTags.vue";
 import {computed, onMounted, ref} from "vue";
-import {LocalStorage, scroll} from 'quasar'
+import {LocalStorage, scroll, useQuasar} from 'quasar'
 import DialogAddItems from "components/DialogAddItems.vue";
 import {finalize, findObjectKeyInArray} from "src/helpers/helpers";
+import {api} from "boot/axios";
 
 const route = useRoute()
-const listID = route.params.id;
+let params = route.params;
+const listID = params.id;
+const $q = useQuasar()
 
 const { getScrollTarget, setVerticalScrollPosition } = scroll
 const itemRefs = ref([])
@@ -169,9 +172,9 @@ const selectedItem = ref({
 })
 
 const groceryList = {
-  id: 1,
-  name: "Grocery List",
-  tag: "kitchen items",
+  id: listID,
+  name: params.name,
+  tag: params.tag,
   sharedList: ['/assets/avatar.svg', '/assets/avatar.svg'],
   otherPeople: 15,
 };
@@ -194,7 +197,18 @@ function onRight(index) {
 onMounted(() => console.log(itemRefs.value))
 
 function onLeft(index) {
-  groceryItemList.value[index].done = true;
+  let currentItem = groceryItemList.value[index]
+  currentItem.done = 1;
+
+  api.post('/items/'+currentItem.id, {
+    list_id: listID
+  })
+    .then((response) => {
+
+    })
+    .catch((error) => {
+      currentItem.done = 0;
+    })
 
   finalize(itemRefs.value[index].reset, 300);
 }
@@ -245,7 +259,7 @@ function hideDialog() {
   dialogEdit.value = false;
 }
 
-function addItems(item) {
+async function addItems(item) {
   let exists = findObjectKeyInArray(groceryItemList.value, item, 'name')
 
   if (exists !== undefined) {
@@ -258,21 +272,48 @@ function addItems(item) {
     return;
   }
 
-  selectedItem.value = {
-    id: groceryItemList.value.length === 0 ? 1 : groceryItemList.value[groceryItemList.value.length - 1].id + 1,
-    name: item.name.trim(),
-    done: false,
-    quantity: 1,
-    unit: null,
-    deleted: false,
-  }
+  if (item.name.trim().length > 0) {
 
-  if (selectedItem.value.name.length > 0) {
-    groceryItemList.value.push(selectedItem.value)
+    await api.post('items', {
+      list_id: listID,
+      name: item.name,
+      quantity: item.quantity,
+      unit: item.unit,
+    })
+      .then((response) => {
+        let itemObject = {
+          id: response.data.data.id,
+          name: item.name,
+          done: false,
+          quantity: item.quantity,
+          unit: item.unit,
+          deleted: false,
+        }
+
+        groceryItemList.value.push(itemObject)
+    })
+      .catch((error) => {
+        q.notify({
+          color: 'negative',
+          position: 'bottom',
+          message: 'Something went wrong... Sorry, please try again later.',
+          icon: 'check'
+        })
+      })
+
   }
 }
 
 const groceryListCompleted = computed(() => {
   return groceryItemList.value.filter(item => item.done && !item.deleted).length
+})
+
+onMounted(() => {
+
+
+  api.get('/items', {params: {list_id: listID}})
+    .then((response) => {
+      groceryItemList.value = response.data.data.items;
+    })
 })
 </script>

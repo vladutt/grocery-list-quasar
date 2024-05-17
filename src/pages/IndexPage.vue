@@ -28,11 +28,11 @@
       <div class="grocery-list-item"
            v-for="(shoppingList, index) in shoppingLists"
            :key="index"
-           @click="router.push('/grocery-list/'+shoppingList.id)"
+           @click="router.push('/grocery-list/'+shoppingList.id+'/'+shoppingList.name+'/'+shoppingList.tag)"
       >
 
         <h4 class="text-h6 text-weight-bold no-margin">{{ shoppingList.name }}</h4>
-        <shared-persons :sharedList="shoppingList.sharedList" :other-people="shoppingList.otherPeople"/>
+        <shared-persons v-if="typeof shoppingList.otherPeople !== 'undefined'" :sharedList="shoppingList.sharedList" :other-people="shoppingList.otherPeople"/>
 
         <list-and-tags
           :checked-items="shoppingList.checkedItems"
@@ -74,10 +74,12 @@
 </template>
 
 <script setup>
-import {ref} from "vue";
+import {onMounted, ref} from "vue";
 import {useRouter} from 'vue-router'
 import ListAndTags from "components/ListAndTags.vue";
 import SharedPersons from "components/SharedPersons.vue";
+import {api} from "boot/axios";
+import {LocalStorage} from "quasar";
 
 defineOptions({
   name: 'IndexPage'
@@ -87,80 +89,92 @@ const dialog = ref(false);
 const router = useRouter()
 const newList = ref({"name": null, "tag": null});
 
-const shoppingLists = [
-  {
-    id: 1,
-    name: "Grocery List",
-    tag: "kitchen items",
-    totalItems: 7,
-    checkedItems: 1,
-    sharedList: [],
-    otherPeople: 15,
-  },
-  {
-    id: 2,
-    name: "Găteală sămbătă",
-    tag: "Paste e Basta",
-    totalItems: 5,
-    checkedItems: 3,
-    sharedList: ['/assets/avatar.svg', '/assets/avatar.svg'],
-    otherPeople: 8,
-  },
-  {
-    id: 3,
-    name: "Grocery List",
-    tag: "kitchen items",
-    totalItems: 7,
-    checkedItems: 1,
-    sharedList: ['/assets/avatar.svg', '/assets/avatar.svg'],
-    otherPeople: 15,
-  },
-  {
-    id: 4,
-    name: "Găteală sămbătă",
-    tag: "Paste e Basta",
-    totalItems: 5,
-    checkedItems: 3,
-    sharedList: ['/assets/avatar.svg', '/assets/avatar.svg'],
-    otherPeople: 8,
-  },
-  {
-    id: 5,
-    name: "Grocery List",
-    tag: "kitchen items",
-    totalItems: 7,
-    checkedItems: 1,
-    sharedList: ['/assets/avatar.svg', '/assets/avatar.svg'],
-    otherPeople: 15,
-  },
-  {
-    id: 6,
-    name: "Găteală sămbătă",
-    tag: "Paste e Basta",
-    totalItems: 5,
-    checkedItems: 3,
-    sharedList: ['/assets/avatar.svg', '/assets/avatar.svg'],
-    otherPeople: 8,
-  },
-  {
-    id: 7,
-    name: "Grocery List",
-    tag: "kitchen items",
-    totalItems: 7,
-    checkedItems: 1,
-    sharedList: ['/assets/avatar.svg', '/assets/avatar.svg'],
-    otherPeople: 15,
-  },
-  {
-    id: 8,
-    name: "Găteală sămbătă",
-    tag: "Paste e Basta",
-    totalItems: 5,
-    checkedItems: 3,
-    sharedList: ['/assets/avatar.svg', '/assets/avatar.svg'],
-    otherPeople: 8,
-  },
-];
+// const shoppingLists = [
+//   {
+//     id: 1,
+//     name: "Grocery List",
+//     tag: "kitchen items",
+//     totalItems: 7,
+//     checkedItems: 1,
+//     sharedList: [],
+//     otherPeople: 15,
+//   },
+//   {
+//     id: 2,
+//     name: "Găteală sămbătă",
+//     tag: "Paste e Basta",
+//     totalItems: 5,
+//     checkedItems: 3,
+//     sharedList: ['/assets/avatar.svg', '/assets/avatar.svg'],
+//     otherPeople: 8,
+//   },
+//   {
+//     id: 3,
+//     name: "Grocery List",
+//     tag: "kitchen items",
+//     totalItems: 7,
+//     checkedItems: 1,
+//     sharedList: ['/assets/avatar.svg', '/assets/avatar.svg'],
+//     otherPeople: 15,
+//   },
+//   {
+//     id: 4,
+//     name: "Găteală sămbătă",
+//     tag: "Paste e Basta",
+//     totalItems: 5,
+//     checkedItems: 3,
+//     sharedList: ['/assets/avatar.svg', '/assets/avatar.svg'],
+//     otherPeople: 8,
+//   },
+//   {
+//     id: 5,
+//     name: "Grocery List",
+//     tag: "kitchen items",
+//     totalItems: 7,
+//     checkedItems: 1,
+//     sharedList: ['/assets/avatar.svg', '/assets/avatar.svg'],
+//     otherPeople: 15,
+//   },
+//   {
+//     id: 6,
+//     name: "Găteală sămbătă",
+//     tag: "Paste e Basta",
+//     totalItems: 5,
+//     checkedItems: 3,
+//     sharedList: ['/assets/avatar.svg', '/assets/avatar.svg'],
+//     otherPeople: 8,
+//   },
+//   {
+//     id: 7,
+//     name: "Grocery List",
+//     tag: "kitchen items",
+//     totalItems: 7,
+//     checkedItems: 1,
+//     sharedList: ['/assets/avatar.svg', '/assets/avatar.svg'],
+//     otherPeople: 15,
+//   },
+//   {
+//     id: 8,
+//     name: "Găteală sămbătă",
+//     tag: "Paste e Basta",
+//     totalItems: 5,
+//     checkedItems: 3,
+//     sharedList: ['/assets/avatar.svg', '/assets/avatar.svg'],
+//     otherPeople: 8,
+//   },
+// ];
 
-const tab = ref('mails');
+const shoppingLists = ref([]);
+
+onMounted(() => {
+  api.get('/user')
+    .then((data) => {
+      LocalStorage.set('user', data.data);
+    })
+
+  api.get('/lists')
+    .then((response) => {
+      shoppingLists.value = response.data.data.items;
+    })
+})
 </script>

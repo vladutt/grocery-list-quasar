@@ -3,12 +3,22 @@ const routes = [
     path: '/',
     component: () => import('layouts/Layout.vue'),
     children: [
-      { path: '', component: () => import('pages/IndexPage.vue') },
+      { path: '/', component: () => import('pages/IndexPage.vue') },
     ]
   },
-
   {
-    path: '/grocery-list/:id',
+    path: '/login',
+    component: () => import('layouts/UnregisterLayout.vue'),
+    children: [
+      { path: '', component: () => import('pages/LoginPage.vue')}
+    ]
+  },
+  {
+    path: '/register',
+    component: () => import('pages/RegisterPage.vue'),
+  },
+  {
+    path: '/grocery-list/:id/:name/:tag',
     component: () => import('layouts/GroceryLayout.vue'),
     children: [
       { path: '', component: () => import('pages/GroceryList.vue') },
