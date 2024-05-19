@@ -2,7 +2,7 @@
   <q-layout view="lHh Lpr lFf">
     <q-header reveal elevated class="q-pa-md bg-white">
     <div class="flex justify-between">
-        <div class="flex items-center">
+        <div class="flex items-center" @click="router.push('/settings')">
           <img src="/assets/avatar.svg" alt=""/>
 
           <div class="q-ml-sm text-black">
@@ -33,14 +33,16 @@
 
 <script setup>
 import {LocalStorage, useQuasar} from "quasar";
-import {onMounted, ref} from "vue";
+import {useRouter} from "vue-router";
 
 defineOptions({
   // eslint-disable-next-line vue/multi-word-component-names
   name: 'Layout'
 })
 
-let user = ref(LocalStorage.getItem('user'));
+let user = LocalStorage.getItem('user');
+
+const router = useRouter()
 
 const q = useQuasar();
 q.dark.set(false)

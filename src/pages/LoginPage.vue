@@ -1,12 +1,11 @@
 <script setup>
 import {ref} from "vue";
-import router from "src/router";
 import {useRouter} from 'vue-router'
 import {api} from "boot/axios";
-import {useQuasar} from "quasar";
+import {LocalStorage, useQuasar} from "quasar";
 
 const $q = useQuasar()
-const route = useRouter()
+const router = useRouter()
 const loading = ref(false);
 const login = ref({
   email: '',
@@ -22,12 +21,20 @@ function loginAccount() {
 
   api.post('/login', login.value)
     .then((data) => {
+      LocalStorage.set('token', data.data.token);
+      LocalStorage.set('user', {
+        name: data.data.name,
+        email: data.data.email,
+      });
+
       $q.notify({
         color: 'positive',
         position: 'bottom',
         message: data.data.message,
         icon: 'check'
       });
+
+      return router.push('/');
     })
     .catch((error) => {
       let response = error.response.data.errors;
@@ -71,7 +78,7 @@ function loginAccount() {
   <q-btn @click="loginAccount" label="Login" color="primary" rounded class="full-width q-mt-xl" />
 
   <div class="text-right q-mt-sm">
-    Don't have a account? <a @click="route.push('/register')" class="text-primary" style="text-decoration: none" >Sign up</a>
+    Don't have a account? <a @click="router.push('/register')" class="text-primary" style="text-decoration: none" >Sign up</a>
   </div>
 
 

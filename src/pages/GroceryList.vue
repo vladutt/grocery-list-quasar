@@ -188,13 +188,19 @@ function editItem(item) {
 }
 
 function onRight(index) {
-  setTimeout(() => {
-    finalize(itemRefs.value[index].reset, 100);
-    groceryItemList.value[index].deleted = true;
-  }, 300)
-}
+  let currentItem = groceryItemList.value[index]
 
-onMounted(() => console.log(itemRefs.value))
+  api.delete('/items/'+currentItem.id, {params: {list_id: listID}})
+    .then((response) => {
+        finalize(itemRefs.value[index].reset, 100);
+        currentItem.deleted = true;
+    })
+    .catch((response) => {
+      alert('nooo')
+    })
+
+
+}
 
 function onLeft(index) {
   let currentItem = groceryItemList.value[index]
@@ -230,7 +236,20 @@ function hideDialog() {
   let existsItem = findObjectKeyInArray(groceryItemList.value, selectedItem.value, 'id');
 
   if (existsItem) {
-    existsItem.quantity = selectedItem.value.quantity;
+
+    api.put('/items/'+existsItem.id, {
+      list_id: listID,
+      name: existsItem.name,
+      quantity: existsItem.quantity,
+      unit: existsItem.unit,
+    })
+      .then((response) => {
+
+      })
+      .catch((error) => {
+
+      })
+
   }
 
 
@@ -250,7 +269,7 @@ function hideDialog() {
   selectedItem.value = {
     id: 0,
     name: '',
-    done: false,
+    done: 0,
     quantity: 1,
     unit: null,
     deleted: false,
@@ -263,10 +282,11 @@ async function addItems(item) {
   let exists = findObjectKeyInArray(groceryItemList.value, item, 'name')
 
   if (exists !== undefined) {
+    alert(2);
     exists.quantity = item.quantity
 
     if (exists.quantity === 0) {
-      groceryItemList.value[groceryItemList.value.length - 1].deleted = true;
+      groceryItemList.value[groceryItemList.value.length - 1].deleted = 1;
     }
 
     return;
@@ -284,7 +304,7 @@ async function addItems(item) {
         let itemObject = {
           id: response.data.data.id,
           name: item.name,
-          done: false,
+          done: 0,
           quantity: item.quantity,
           unit: item.unit,
           deleted: false,
@@ -293,7 +313,7 @@ async function addItems(item) {
         groceryItemList.value.push(itemObject)
     })
       .catch((error) => {
-        q.notify({
+        $q.notify({
           color: 'negative',
           position: 'bottom',
           message: 'Something went wrong... Sorry, please try again later.',
@@ -309,8 +329,6 @@ const groceryListCompleted = computed(() => {
 })
 
 onMounted(() => {
-
-
   api.get('/items', {params: {list_id: listID}})
     .then((response) => {
       groceryItemList.value = response.data.data.items;

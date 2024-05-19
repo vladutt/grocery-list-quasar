@@ -35,9 +35,13 @@ function registerAccount() {
         icon: 'check'
       });
 
+      LocalStorage.set('user', {
+        name: data.data.name,
+        email: data.data.email,
+      });
       LocalStorage.set('token', data.data.token);
 
-      router.push('/')
+      return router.push('/')
     })
     .catch((error) => {
       let response = error.response.data.errors;
