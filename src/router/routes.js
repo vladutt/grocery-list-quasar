@@ -19,7 +19,7 @@ const routes = [
     component: () => import('pages/RegisterPage.vue'),
   },
   {
-    path: '/grocery-list/:id/:name/:tag',
+    path: '/grocery-list/:id/:name',
     component: () => import('layouts/GroceryLayout.vue'),
     children: [
       { path: '', component: () => import('pages/GroceryList.vue') },

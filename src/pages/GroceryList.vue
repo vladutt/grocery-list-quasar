@@ -3,7 +3,7 @@
 
     <h6 class="text-h5 text-weight-bolder no-margin">{{ groceryList.name }}</h6>
 
-    <list-and-tags :tag="groceryList.tag" :checked-items="groceryListCompleted"
+    <list-and-tags :checked-items="groceryListCompleted"
                    :total-items="groceryItemList.filter(item => !item.deleted).length"/>
 
     <q-card-section class="no-padding q-mt-md" style="margin-bottom: 50px;">
@@ -44,7 +44,7 @@
                     style="background: #FCFCFD; border: 1px solid #EAECF0"
                   >
                     <q-item-section avatar class="no-padding" style="min-width: 0">
-                      <q-checkbox v-model="item.done" :true-value="1" :false-value="0" color="primary"/>
+                      <q-checkbox @click="onLeft(index)" v-model="item.done" :true-value="1" :false-value="0" color="primary"/>
                     </q-item-section>
 
                     <q-item-section>
@@ -175,8 +175,6 @@ const groceryList = {
   id: listID,
   name: params.name,
   tag: params.tag,
-  sharedList: ['/assets/avatar.svg', '/assets/avatar.svg'],
-  otherPeople: 15,
 };
 
 const groceryItemList = ref([]);
@@ -282,7 +280,6 @@ async function addItems(item) {
   let exists = findObjectKeyInArray(groceryItemList.value, item, 'name')
 
   if (exists !== undefined) {
-    alert(2);
     exists.quantity = item.quantity
 
     if (exists.quantity === 0) {

@@ -1,5 +1,5 @@
 <script setup>
-import {ref} from "vue";
+import {onMounted, ref} from "vue";
 
 const dialog = defineModel({'required': true, default: false});
 const emit = defineEmits(['item']);
@@ -132,6 +132,10 @@ function removeItem(index) {
   items.value[index].quantity--;
   emit('item', items.value[index]);
 }
+
+onMounted(() => {
+
+})
 </script>
 
 <template>

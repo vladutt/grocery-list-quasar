@@ -15,16 +15,15 @@
            v-touch-hold.mouse="editDialog(index)"
            v-for="(shoppingList, index) in shoppingLists"
            :key="index"
-           @click="router.push('/grocery-list/'+shoppingList.id+'/'+shoppingList.name+'/'+shoppingList.tag)"
+           @click="selectList(shoppingList)"
       >
 
         <h4 class="text-h6 text-weight-bold no-margin">{{ shoppingList.name }}</h4>
-        <shared-persons v-if="typeof shoppingList.otherPeople !== 'undefined'" :sharedList="shoppingList.sharedList" :other-people="shoppingList.otherPeople"/>
+        <shared-persons v-if="typeof shoppingList.sharedList !== 'undefined'" :sharedList="shoppingList.sharedList" :other-people="shoppingList.otherPeople ?? 0"/>
 
         <list-and-tags
           :checked-items="shoppingList.checkedItems"
           :total-items="shoppingList.totalItems"
-          :tag="shoppingList.tag"
         ></list-and-tags>
 
       </div>
@@ -80,8 +79,6 @@ import ListAndTags from "components/ListAndTags.vue";
 import SharedPersons from "components/SharedPersons.vue";
 import {api} from "boot/axios";
 import {LocalStorage, useQuasar} from "quasar";
-import {findObjectKeyInArray} from "src/helpers/helpers";
-
 defineOptions({
   name: 'IndexPage'
 });
@@ -92,82 +89,13 @@ const $q = useQuasar()
 const router = useRouter()
 const newList = ref({id: 0, "name": null, "tag": null});
 
-// const shoppingLists = [
-//   {
-//     id: 1,
-//     name: "Grocery List",
-//     tag: "kitchen items",
-//     totalItems: 7,
-//     checkedItems: 1,
-//     sharedList: [],
-//     otherPeople: 15,
-//   },
-//   {
-//     id: 2,
-//     name: "Găteală sămbătă",
-//     tag: "Paste e Basta",
-//     totalItems: 5,
-//     checkedItems: 3,
-//     sharedList: ['/assets/avatar.svg', '/assets/avatar.svg'],
-//     otherPeople: 8,
-//   },
-//   {
-//     id: 3,
-//     name: "Grocery List",
-//     tag: "kitchen items",
-//     totalItems: 7,
-//     checkedItems: 1,
-//     sharedList: ['/assets/avatar.svg', '/assets/avatar.svg'],
-//     otherPeople: 15,
-//   },
-//   {
-//     id: 4,
-//     name: "Găteală sămbătă",
-//     tag: "Paste e Basta",
-//     totalItems: 5,
-//     checkedItems: 3,
-//     sharedList: ['/assets/avatar.svg', '/assets/avatar.svg'],
-//     otherPeople: 8,
-//   },
-//   {
-//     id: 5,
-//     name: "Grocery List",
-//     tag: "kitchen items",
-//     totalItems: 7,
-//     checkedItems: 1,
-//     sharedList: ['/assets/avatar.svg', '/assets/avatar.svg'],
-//     otherPeople: 15,
-//   },
-//   {
-//     id: 6,
-//     name: "Găteală sămbătă",
-//     tag: "Paste e Basta",
-//     totalItems: 5,
-//     checkedItems: 3,
-//     sharedList: ['/assets/avatar.svg', '/assets/avatar.svg'],
-//     otherPeople: 8,
-//   },
-//   {
-//     id: 7,
-//     name: "Grocery List",
-//     tag: "kitchen items",
-//     totalItems: 7,
-//     checkedItems: 1,
-//     sharedList: ['/assets/avatar.svg', '/assets/avatar.svg'],
-//     otherPeople: 15,
-//   },
-//   {
-//     id: 8,
-//     name: "Găteală sămbătă",
-//     tag: "Paste e Basta",
-//     totalItems: 5,
-//     checkedItems: 3,
-//     sharedList: ['/assets/avatar.svg', '/assets/avatar.svg'],
-//     otherPeople: 8,
-//   },
-// ];
+const shoppingLists = ref([{}]);
 
-const shoppingLists = ref([]);
+function selectList(shoppingList) {
+  LocalStorage.set('selectedList', shoppingList);
+
+  router.push('/grocery-list/'+shoppingList.id+'/'+shoppingList.name)
+}
 
 function hideDialog() {
   dialog.value = false;

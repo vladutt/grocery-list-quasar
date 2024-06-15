@@ -23,9 +23,12 @@ function loginAccount() {
     .then((data) => {
       LocalStorage.set('token', data.data.token);
       LocalStorage.set('user', {
+        id: data.data.id,
         name: data.data.name,
         email: data.data.email,
       });
+
+      api.defaults.headers['Authorization'] = 'Bearer ' + data.data.token;
 
       $q.notify({
         color: 'positive',

@@ -8,5 +8,14 @@ function finalize(reset, timeout = 1000) {
   }, timeout)
 }
 
+function checkAvatar(shared) {
+  if (shared.avatar === null) {
+    return 'https://ui-avatars.com/api/?background=random&name='+shared.name.charAt(0).toUpperCase();
+  } else {
+    return shared.avatar
+  }
 
-export {findObjectKeyInArray, finalize}
+}
+
+
+export {findObjectKeyInArray, finalize, checkAvatar}

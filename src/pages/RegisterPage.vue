@@ -36,10 +36,13 @@ function registerAccount() {
       });
 
       LocalStorage.set('user', {
+        id: data.data.id,
         name: data.data.name,
         email: data.data.email,
       });
       LocalStorage.set('token', data.data.token);
+
+      api.defaults.headers['Authorization'] = 'Bearer ' + data.data.token;
 
       return router.push('/')
     })

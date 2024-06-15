@@ -6,7 +6,7 @@
           <q-btn size="md" icon="arrow_back" @click="router.push('/')" class="icon-bubble active" title="Back"/>
         </div>
 
-        <shared-persons :add="true" width="39px" height="39px" :other-people="5" :shared-list="['/assets/avatar.svg', '/assets/avatar.svg']"></shared-persons>
+        <shared-persons :add="true" width="39px" height="39px" :shared-list="sharedList"></shared-persons>
 
         <div class="flex items-center vertical-middle justify-center">
           <q-btn-dropdown size="md" class="icon-bubble active" dropdown-icon="more_vert">
@@ -49,8 +49,8 @@
 <script setup>
 import {LocalStorage, useQuasar} from "quasar";
 import SharedPersons from "components/SharedPersons.vue";
-import {useRouter} from "vue-router";
-import {ref} from "vue";
+import {useRoute, useRouter} from "vue-router";
+import {onMounted, ref} from "vue";
 import {staticOptions} from "src/static/settings.js";
 
 
@@ -58,6 +58,11 @@ defineOptions({
   // eslint-disable-next-line vue/multi-word-component-names
   name: 'Layout'
 })
+
+const route = useRoute()
+let listId = route.params.id;
+const sharedList = ref([]);
+
 const router = useRouter()
 
 function changeState(key) {
@@ -68,4 +73,11 @@ const options = ref(staticOptions);
 
 const q = useQuasar();
 q.dark.set(false)
+
+
+onMounted(() => {
+  let selectedItem = LocalStorage.getItem('selectedList');
+console.log(selectedItem.sharedList);
+  sharedList.value = selectedItem.sharedList;
+})
 </script>
