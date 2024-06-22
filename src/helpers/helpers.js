@@ -17,5 +17,23 @@ function checkAvatar(shared) {
 
 }
 
+function sortErrorsFromRequest(errors, request) {
 
-export {findObjectKeyInArray, finalize, checkAvatar}
+  for (let key in errors) {
+    if (request.hasOwnProperty(key)) {
+        errors[key] = request[key];
+    } else {
+      errors[key] = null;
+    }
+  }
+
+}
+
+function setPropsToNull(obj) {
+  for (let key in obj) {
+    obj[key] = null;
+  }
+}
+
+
+export {findObjectKeyInArray, finalize, checkAvatar, sortErrorsFromRequest, setPropsToNull}

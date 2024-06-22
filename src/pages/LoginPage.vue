@@ -26,6 +26,7 @@ function loginAccount() {
         id: data.data.id,
         name: data.data.name,
         email: data.data.email,
+        avatar: data.data.avatar
       });
 
       api.defaults.headers['Authorization'] = 'Bearer ' + data.data.token;

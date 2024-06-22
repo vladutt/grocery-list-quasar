@@ -22,16 +22,16 @@
                 </q-item-section>
               </q-item>
 
-              <q-item clickable v-close-popup>
-                <q-item-section>
-                  <q-toggle
-                    @click="changeState('useAddList')"
-                    v-model="options.useAddList"
-                    label="Use add List"
-                    left-label
-                  />
-                </q-item-section>
-              </q-item>
+<!--              <q-item clickable v-close-popup>-->
+<!--                <q-item-section>-->
+<!--                  <q-toggle-->
+<!--                    @click="changeState('useAddList')"-->
+<!--                    v-model="options.useAddList"-->
+<!--                    label="Use add List"-->
+<!--                    left-label-->
+<!--                  />-->
+<!--                </q-item-section>-->
+<!--              </q-item>-->
 
             </q-list>
           </q-btn-dropdown>

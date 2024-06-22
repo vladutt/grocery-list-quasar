@@ -202,15 +202,17 @@ function onRight(index) {
 
 function onLeft(index) {
   let currentItem = groceryItemList.value[index]
-  currentItem.done = 1;
+  // currentItem.done = 1;
 
   api.post('/items/'+currentItem.id, {
     list_id: listID
   })
     .then((response) => {
-
+      currentItem.done = response.data.data.item.done ? 1 : 0;
     })
     .catch((error) => {
+      console.log(error);
+      alert(2);
       currentItem.done = 0;
     })
 

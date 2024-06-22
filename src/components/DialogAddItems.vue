@@ -132,10 +132,6 @@ function removeItem(index) {
   items.value[index].quantity--;
   emit('item', items.value[index]);
 }
-
-onMounted(() => {
-
-})
 </script>
 
 <template>

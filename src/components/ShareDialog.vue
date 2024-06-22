@@ -23,8 +23,11 @@ function send() {
       $q.notify('List shared with ' + inputValue.value)
     })
     .catch((response) => {
-      alert(23)
-    })
+      $q.notify({
+        message: 'Something went wrong... Please, try again later. ',
+        color: 'negative',
+        position: 'bottom'
+      })    })
 
 }
 
