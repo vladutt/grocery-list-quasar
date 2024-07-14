@@ -3,7 +3,7 @@
     <q-header reveal elevated class="q-pa-md bg-white">
     <div class="flex justify-between">
         <div class="flex items-center" @click="router.push('/settings')">
-          <img src="/assets/avatar.svg" alt=""/>
+          <img :src="user.avatar" alt="" width="32" height="32" style="border-radius: 20px" />
 
           <div class="q-ml-sm text-black">
             <p class="no-margin text-bold">{{ user.name }}</p>
@@ -41,7 +41,6 @@ defineOptions({
 })
 
 let user = LocalStorage.getItem('user');
-
 const router = useRouter()
 
 const q = useQuasar();

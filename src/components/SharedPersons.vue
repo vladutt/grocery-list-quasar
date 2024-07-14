@@ -2,7 +2,10 @@
 import ShareDialog from "components/ShareDialog.vue";
 import {onMounted, ref, watch} from "vue";
 import {checkAvatar} from "src/helpers/helpers";
+import { inject } from 'vue'
+import {LocalStorage} from "quasar";
 
+const bus = inject('bus')
 const props = defineProps({
   sharedList: Array,
   width: String,
@@ -15,13 +18,18 @@ const otherPeople = ref(0);
 const dialogShare = ref(false)
 
 function createOthers () {
-  if (sharedListMutable.value.length > 6) {
+  if (typeof sharedListMutable.value !== 'undefined' && sharedListMutable.value.length > 6) {
     otherPeople.value = sharedListMutable.value.length - 5;
     sharedListMutable.value.splice(5, sharedListMutable.value.length);
   }
 }
 
 onMounted(() => {
+
+  bus.on('shared-list', (sharedList) => {
+    sharedListMutable.value = sharedList;
+  })
+
   createOthers();
 })
 
@@ -54,7 +62,7 @@ watch(props, async (newProps, oldProps) => {
       <q-btn @click="dialogShare = !dialogShare" icon="add" style="width: 36px; height: 32px; box-shadow: none !important;" class="icon-bubble text-grey-6 no-padding bg-white"/>
     </div>
 
-    <share-dialog v-model="dialogShare" :shared-list="props.sharedList"/>
+    <share-dialog v-if="LocalStorage.getItem('selectedList')" v-model="dialogShare"/>
 
   </div>
 </template>

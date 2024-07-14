@@ -14,6 +14,7 @@ const register = ref({
   name: '',
   password: '',
   password_confirmation: '',
+  terms: false
 });
 
 const errors = ref({
@@ -21,6 +22,7 @@ const errors = ref({
   name: '',
   password: '',
   password_confirmation: '',
+  terms: false
 });
 
 function registerAccount() {
@@ -39,6 +41,7 @@ function registerAccount() {
         id: data.data.id,
         name: data.data.name,
         email: data.data.email,
+        avatar: data.data.avatar,
       });
       LocalStorage.set('token', data.data.token);
 
@@ -60,9 +63,11 @@ function registerAccount() {
 <template>
   <h4 class="text-h4 text-weight-bold text-center"> Create Account </h4>
 
+  <div  class="text-center">
+    <q-img src="assets/logo.png" width="200px"></q-img>
+  </div>
 
   <div class=" text-black q-pa-md">
-  <h5 class="text-weight-bolder text-primary">Sign up</h5>
 
 
   <q-input
@@ -127,15 +132,26 @@ function registerAccount() {
     </template>
   </q-input>
 
-  <q-btn @click="registerAccount()" :loading="loading" label="Sign up" color="primary" rounded class="full-width q-mt-xl" />
+    <q-checkbox v-model="register.terms"
+                :error="errors.terms.length > 0"
+                label="I'm agree to accept "
+    > <a href="https://grocermate.ro/terms">
+      Terms and Conditions</a> and accept <a href="https://grocermate.ro/privacy">Privacy Policy</a>
+      <template v-slot:error>
+        {{ errors.terms }}
+      </template>
+
+    </q-checkbox>
+
+  <q-btn @click="registerAccount()" :loading="loading" label="Sign up" color="primary" rounded class="full-width" />
 
   <div class="text-right q-mt-sm">
     You have a account? <a @click="router.push('/login')" class="text-primary" style="text-decoration: none" >Sign In</a>
   </div>
 
 
-  <div class="text-center text-weight-bolder q-my-xl">OR</div>
-  <div class="text-center q-mt-xl">
+  <div class="text-center text-weight-bolder q-my-sm">OR</div>
+  <div class="text-center">
     <q-img width="46px" src="assets/social/google.svg"/>
     <q-img width="46px" class="q-mx-sm" src="assets/social/facebook.svg"/>
     <q-img width="46px" src="assets/social/twitter.svg"/>

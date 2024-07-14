@@ -9,10 +9,10 @@ function finalize(reset, timeout = 1000) {
 }
 
 function checkAvatar(shared) {
-  if (shared.avatar === null) {
+  if (shared.avatarPath === null) {
     return 'https://ui-avatars.com/api/?background=random&name='+shared.name.charAt(0).toUpperCase();
   } else {
-    return shared.avatar
+    return shared.avatarPath
   }
 
 }

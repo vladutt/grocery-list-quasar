@@ -1,6 +1,6 @@
 <script setup>
 import {ref} from "vue";
-import {useQuasar} from "quasar";
+import {LocalStorage, useQuasar} from "quasar";
 import {api} from "boot/axios";
 import {setPropsToNull, sortErrorsFromRequest} from "src/helpers/helpers";
 
@@ -21,12 +21,22 @@ function changeEmail() {
     .then((data) => {
       dialog.value = false;
 
+      setPropsToNull(formErrors.value);
+
+      let user = LocalStorage.getItem('user');
+      user.email = form.value.email;
+
+      LocalStorage.setItem('user', user);
+
       $q.notify({
         type: 'positive',
-        message: `Email changed successfully.`,
+        message: `Email saved successfully. We will refresh the app an few seconds.`,
+        timeout: 3000
       })
 
-      setPropsToNull(formErrors.value);
+      setTimeout(() => {
+        document.location.reload(true);
+      }, 2000)
     })
     .catch((error) => {
       let errors = error.response.data.errors;

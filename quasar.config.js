@@ -175,6 +175,10 @@ module.exports = configure(function (/* ctx */) {
 
     // Full list of options: https://v2.quasar.dev/quasar-cli-vite/developing-cordova-apps/configuring-cordova
     cordova: {
+      preferences: [{
+        'name': 'deployment-target',
+        'value': '12.0' // Or any value from 12.0 to 17.5.99
+      }],
       // noIosLegacyBuildFlag: true, // uncomment only if you know what you are doing
     },
 
@@ -209,7 +213,7 @@ module.exports = configure(function (/* ctx */) {
       builder: {
         // https://www.electron.build/configuration/configuration
 
-        appId: 'grocerylist'
+        appId: 'grocermate'
       }
     },
 

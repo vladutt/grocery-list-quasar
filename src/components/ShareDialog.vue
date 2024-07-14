@@ -2,15 +2,17 @@
 import {ref} from "vue";
 import {api} from "boot/axios";
 import {useRoute} from "vue-router";
-import {checkAvatar} from "src/helpers/helpers";
+import {checkAvatar, findObjectKeyInArray} from "src/helpers/helpers";
 import {LocalStorage, useQuasar} from "quasar";
+import { inject } from 'vue'
 
+const bus = inject('bus')
 
 const dialog = defineModel({'required': true, default: false});
 const route = useRoute()
 const $q = useQuasar()
 
-const sharedList = LocalStorage.getItem('selectedList').sharedList
+let sharedList = ref(LocalStorage.getItem('selectedList').sharedList ?? [])
 let listId = route.params.id;
 
 let ownerId = LocalStorage.getItem('selectedList').user_id === LocalStorage.getItem('user').id
@@ -36,6 +38,9 @@ function remove(userID) {
     .then((response) => {
       $q.notify(response.data.data.message)
 
+      sharedList.value = sharedList.value.filter(item => item.id !== userID);
+
+      bus.emit('shared-list', sharedList.value);
     })
     .catch((response) => {
       $q.notify({

@@ -1,4 +1,4 @@
-# Grocery List (grocerylist)
+# Grocer Mate (grocerylist)
 
 A Quasar Project
 

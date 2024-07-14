@@ -1,21 +1,30 @@
 <template>
-  <div class="GroceryList">
+  <q-inner-loading
+    :showing="groceryItemList === null"
+    label="Please wait..."
+    label-class="text-purple"
+    label-style="font-size: 1.1em"
+  />
+
+
+  <div class="GroceryList" v-if="groceryItemList !== null">
 
     <h6 class="text-h5 text-weight-bolder no-margin">{{ groceryList.name }}</h6>
 
-    <list-and-tags :checked-items="groceryListCompleted"
+    <item-list-progressbar :checked-items="groceryListCompleted"
                    :total-items="groceryItemList.filter(item => !item.deleted).length"/>
 
     <q-card-section class="no-padding q-mt-md" style="margin-bottom: 50px;">
       <q-card-actions class="no-padding">
         <div class="full-width full-height">
-          <q-list separator v-if="groceryItemList.length">
+          <q-list separator v-if="groceryItemList !== null && groceryItemList.length">
             <transition-group
               appear
               enter-active-class="animated backInLeft"
               leave-active-class="animated backOutLeft slow"
             >
-                <q-slide-item
+              <q-pull-to-refresh @refresh="refresh">
+              <q-slide-item
                   v-show="!item.deleted"
                   @left="onLeft(index)"
                   @right="onRight(index)"
@@ -57,6 +66,7 @@
                     </q-item-section>
                   </q-item>
                 </q-slide-item>
+              </q-pull-to-refresh>
             </transition-group>
 
           </q-list>
@@ -133,7 +143,7 @@
       </q-card-section>
 
       <q-card-section class="text-center">
-        <q-btn color="primary" rounded label="Add item" @click="hideDialog" />
+        <q-btn color="primary" rounded :label="addingItem ? 'Add item' : 'Edit item' " @click="hideDialog" />
       </q-card-section>
 
     </q-card>
@@ -142,12 +152,12 @@
 
 <script setup>
 import {useRoute} from "vue-router";
-import ListAndTags from "components/ListAndTags.vue";
 import {computed, onMounted, ref} from "vue";
 import {LocalStorage, scroll, useQuasar} from 'quasar'
 import DialogAddItems from "components/DialogAddItems.vue";
 import {finalize, findObjectKeyInArray} from "src/helpers/helpers";
 import {api} from "boot/axios";
+import ItemListProgressbar from "components/ItemListProgressbar.vue";
 
 const route = useRoute()
 let params = route.params;
@@ -177,10 +187,12 @@ const groceryList = {
   tag: params.tag,
 };
 
-const groceryItemList = ref([]);
+const groceryItemList = ref(null);
 
 function editItem(item) {
   dialogEdit.value = true;
+  addingItem.value = false;
+
 
   selectedItem.value = item;
 }
@@ -211,8 +223,6 @@ function onLeft(index) {
       currentItem.done = response.data.data.item.done ? 1 : 0;
     })
     .catch((error) => {
-      console.log(error);
-      alert(2);
       currentItem.done = 0;
     })
 
@@ -223,6 +233,7 @@ function addItem() {
   addingItem.value = true;
 
   if (LocalStorage.getItem('useAddList') === true) {
+    selectedItem.value.id = 0;
     dialog.value = true;
     return;
   }
@@ -324,13 +335,26 @@ async function addItems(item) {
 }
 
 const groceryListCompleted = computed(() => {
+  if (groceryItemList.value === null) {
+    return 0;
+  }
   return groceryItemList.value.filter(item => item.done && !item.deleted).length
 })
 
-onMounted(() => {
-  api.get('/items', {params: {list_id: listID}})
+async function refresh(done) {
+  await getItems()
+
+  done()
+}
+
+function getItems() {
+  return api.get('/items', {params: {list_id: listID}})
     .then((response) => {
       groceryItemList.value = response.data.data.items;
     })
+}
+
+onMounted(() => {
+  getItems()
 })
 </script>

@@ -1,16 +1,24 @@
 <template>
-  <div class="text-center full-height q-px-lg" style="margin-top: 20vh" v-if="shoppingLists.length === 0">
+  <q-inner-loading
+    :showing="shoppingLists === null"
+    label="Please wait..."
+    label-class="text-purple"
+    label-style="font-size: 1.1em"
+  />
+
+  <div class="text-center full-height q-px-lg" style="margin-top: 20vh" v-if="shoppingLists !== null && shoppingLists.length === 0">
     <div class="flex items-center justify-center w-full">
-      <img src="src/assets/director.svg" alt=""/>
+      <img src="assets/director.svg" alt=""/>
     </div>
 
-    <h5 class="text-weight-bolder no-margin">Start by creating list</h5>
-    <p>Your smart shopping list will shown here. start by creating a new list</p>
+    <h5 class="text-weight-bolder no-margin">Start by creating a new list.</h5>
+    <p>Your smart shopping list will appear here once you begin.</p>
   </div>
 
   <div v-else class="q-mt-sm">
 
     <section id="grocery-lists">
+      <q-pull-to-refresh @refresh="refresh">
       <div class="grocery-list-item"
            v-touch-hold.mouse="editDialog(index)"
            v-for="(shoppingList, index) in shoppingLists"
@@ -18,15 +26,19 @@
            @click="selectList(shoppingList)"
       >
 
-        <h4 class="text-h6 text-weight-bold no-margin">{{ shoppingList.name }}</h4>
+        <h4 class="text-h6 text-weight-bold no-margin">
+          {{ shoppingList.name }}
+        </h4>
         <shared-persons v-if="typeof shoppingList.sharedList !== 'undefined'" :sharedList="shoppingList.sharedList" :other-people="shoppingList.otherPeople ?? 0"/>
 
-        <list-and-tags
+        <item-list-progressbar
           :checked-items="shoppingList.checkedItems"
           :total-items="shoppingList.totalItems"
-        ></list-and-tags>
+          :shared="shoppingList.owner ?? ''"
+        ></item-list-progressbar>
 
       </div>
+      </q-pull-to-refresh>
     </section>
 
   </div>
@@ -50,12 +62,11 @@
       <q-card-section>
         <div>
           <q-input bg-color="white" autofocus v-model="newList.name" input-style="border-radius: 20px" outlined label="List name*" class="full-width q-mb-sm"/>
-          <q-input bg-color="white" v-model="newList.tag" input-style="border-radius: 20px" outlined label="List tag" class="full-width q-mt-sm"/>
         </div>
 
         <q-btn color="primary" class="full-width border-rounded q-mt-md" style="padding: 13px" @click="saveList()" icon="add">Save</q-btn>
 
-      </q-card-section>c
+      </q-card-section>
     </q-card>
   </q-dialog>
 
@@ -75,10 +86,10 @@
 <script setup>
 import {onMounted, ref} from "vue";
 import {useRouter} from 'vue-router'
-import ListAndTags from "components/ListAndTags.vue";
 import SharedPersons from "components/SharedPersons.vue";
 import {api} from "boot/axios";
 import {LocalStorage, useQuasar} from "quasar";
+import ItemListProgressbar from "components/ItemListProgressbar.vue";
 defineOptions({
   name: 'IndexPage'
 });
@@ -89,7 +100,7 @@ const $q = useQuasar()
 const router = useRouter()
 const newList = ref({id: 0, "name": null, "tag": null});
 
-const shoppingLists = ref([{}]);
+const shoppingLists = ref(null);
 
 function selectList(shoppingList) {
   LocalStorage.set('selectedList', shoppingList);
@@ -145,7 +156,7 @@ function editDialog(index) {
     newList.value.tag = currentList.tag;
     newList.value.id = currentList.id;
 
-    dialog.value = true;
+    dialog.value = currentList.user_id === LocalStorage.getItem('user').id;
   }
 
 }
@@ -172,10 +183,20 @@ function deleteItem() {
 
 }
 
-onMounted(() => {
-  api.get('/lists')
+async function refresh(done) {
+  await getShoppingLists();
+
+  done()
+}
+
+function getShoppingLists() {
+  return api.get('/lists')
     .then((response) => {
       shoppingLists.value = response.data.data.items;
     })
+}
+
+onMounted(() => {
+  getShoppingLists()
 })
 </script>

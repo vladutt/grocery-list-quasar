@@ -29,15 +29,22 @@ function saveProfile() {
       'Content-Type': 'multipart/form-data'
     }
   })
-    .then((data) => {
+    .then((response) => {
       dialog.value = false;
 
+      user.value.avatar = response.data.data.avatar;
+
+      LocalStorage.setItem('user', user.value);
+      setPropsToNull(formErrors.value);
       $q.notify({
         type: 'positive',
-        message: `Profile saved successfully.`,
+        message: `Profile saved successfully. We will refresh the app an few seconds.`,
+        timeout: 3000
       })
 
-      setPropsToNull(formErrors.value);
+      setTimeout(() => {
+        document.location.reload(true);
+      }, 2000)
     })
     .catch((error) => {
       let errors = error.response.data.errors;
@@ -63,7 +70,7 @@ function onRejected() {
 
       <q-card-section class="q-pt-none text-center" >
         <q-avatar class="q-mb-sm">
-          <img src="/assets/avatar.svg" alt="avatar"/>
+          <img :src="user.avatar" alt="avatar"/>
         </q-avatar>
 
         <q-file outlined
