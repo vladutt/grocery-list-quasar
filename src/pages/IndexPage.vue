@@ -127,7 +127,6 @@ function saveList() {
           icon: 'check'
         })
 
-
         hideDialog();
       })
 
@@ -141,8 +140,7 @@ function saveList() {
           icon: 'check'
         })
 
-        shoppingLists.value.push(response.data.data)
-        hideDialog();
+        router.push('/grocery-list/'+response.data.data.id+'/'+response.data.data.name)
       })
   }
 }

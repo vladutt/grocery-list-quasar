@@ -7,7 +7,7 @@
   />
 
 
-  <div class="GroceryList" v-if="groceryItemList !== null">
+  <div class="GroceryList" >
 
     <h6 class="text-h5 text-weight-bolder no-margin">{{ groceryList.name }}</h6>
 
@@ -17,7 +17,7 @@
     <q-card-section class="no-padding q-mt-md" style="margin-bottom: 50px;">
       <q-card-actions class="no-padding">
         <div class="full-width full-height">
-          <q-list separator v-if="groceryItemList !== null && groceryItemList.length">
+          <q-list separator v-if="groceryItemList.length">
             <transition-group
               appear
               enter-active-class="animated backInLeft"
@@ -28,7 +28,7 @@
                   v-show="!item.deleted"
                   @left="onLeft(index)"
                   @right="onRight(index)"
-                  v-for="(item, index) in groceryItemList"
+                  v-for="(item, index) in groceryListSorted"
                   :key="index"
                   :id="index"
                   ref="itemRefs"
@@ -99,9 +99,9 @@
 
   </div>
 
-  <dialog-add-items @item="addItems" input="" v-model="dialog"/>
+<!--  <dialog-add-items @item="addItems" input="" v-model="dialog"/>-->
 
-  <q-dialog v-model="dialogEdit" position="bottom" @hide="hideDialog">
+  <q-dialog v-model="dialogEdit" position="top" @hide="hideDialog">
     <q-card style="width: 350px">
 
       <q-card-section class="q-mb-md row items-center no-wrap no-margin" style="padding-bottom: 0">
@@ -136,7 +136,7 @@
             :color="selectedItem.unit === unit ? 'primary' : 'secondary'"
             v-for="(unit, index) in units"
             :key="index"
-            @click="selectedItem.unit = unit"
+            @click="selectUnit(unit)"
             :label="unit"/>
 
         </q-card-actions>
@@ -154,7 +154,6 @@
 import {useRoute} from "vue-router";
 import {computed, onMounted, ref} from "vue";
 import {LocalStorage, scroll, useQuasar} from 'quasar'
-import DialogAddItems from "components/DialogAddItems.vue";
 import {finalize, findObjectKeyInArray} from "src/helpers/helpers";
 import {api} from "boot/axios";
 import ItemListProgressbar from "components/ItemListProgressbar.vue";
@@ -170,7 +169,7 @@ const itemsScroll = ref(null);
 const dialog = ref(false);
 const dialogEdit = ref(false);
 const addingItem = ref(false);
-const units = ['g', 'kg', 'ml', 'l'];
+const units = ['pcs', 'g', 'kg', 'ml', 'l'];
 
 const selectedItem = ref({
   id: 0,
@@ -184,10 +183,9 @@ const selectedItem = ref({
 const groceryList = {
   id: listID,
   name: params.name,
-  tag: params.tag,
 };
 
-const groceryItemList = ref(null);
+const groceryItemList = ref([]);
 
 function editItem(item) {
   dialogEdit.value = true;
@@ -341,6 +339,16 @@ const groceryListCompleted = computed(() => {
   return groceryItemList.value.filter(item => item.done && !item.deleted).length
 })
 
+const groceryListSorted = computed(() => {
+  if (groceryItemList.value === null) {
+    return 0;
+  }
+
+  let clone = groceryItemList.value;
+
+  return clone.sort((a, b) => (a.done === b.done ? 0 : a.done ? 1 : -1))
+})
+
 async function refresh(done) {
   await getItems()
 
@@ -352,6 +360,10 @@ function getItems() {
     .then((response) => {
       groceryItemList.value = response.data.data.items;
     })
+}
+
+function selectUnit(unit) {
+    selectedItem.value.unit = selectedItem.value.unit === unit ? null : unit;
 }
 
 onMounted(() => {

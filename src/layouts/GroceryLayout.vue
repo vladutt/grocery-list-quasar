@@ -77,7 +77,7 @@ q.dark.set(false)
 
 onMounted(() => {
   let selectedItem = LocalStorage.getItem('selectedList');
-console.log(selectedItem.sharedList);
+
   sharedList.value = selectedItem.sharedList;
 })
 </script>

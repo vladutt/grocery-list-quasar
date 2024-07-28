@@ -3,7 +3,7 @@ import {ref} from "vue";
 import {useRouter} from 'vue-router'
 import {api} from "boot/axios";
 import {LocalStorage, useQuasar} from "quasar";
-import {GoogleLogin} from "vue3-google-login";
+import {decodeCredential, googleAuthCodeLogin, GoogleLogin} from "vue3-google-login";
 
 const $q = useQuasar()
 const router = useRouter()
@@ -52,13 +52,20 @@ function loginAccount() {
 }
 
 const callback = (response) => {
-  console.log(response);
+  const userData = decodeCredential(response.credential)
+  console.log("Handle the userData", userData)
+}
+const loginGoogle = () => {
+  alert(2);
+  googleAuthCodeLogin().then((response) => {
+    console.log("Handle the response", response)
+  })
 }
 </script>
 
 <template>
 <div class="q-pa-md">
-  <h4 class="text-h4 text-weight-bold text-center"> Welcome back! </h4>
+  <h4 class="text-h4 text-weight-bold text-center"> Welcome to Grocer Mate! </h4>
 
   <div  class="text-center">
     <q-img src="assets/logo.png" width="200px"></q-img>
@@ -86,7 +93,7 @@ const callback = (response) => {
     />
 
     <div class="text-center q-mt-lg">
-      <q-btn no-caps size="sm" class="text-weight-bold" text-color="primary"  label="Forgot Password ?"/>
+      <q-btn to="forgot-password" no-caps size="sm" class="text-weight-bold" text-color="primary"  label="Forgot Password ?"/>
     </div>
 
     <q-btn @click="loginAccount" label="Login" color="primary" rounded class="full-width q-mt-sm" />
@@ -96,12 +103,12 @@ const callback = (response) => {
     </div>
 
 
-    <div class="text-center text-weight-bolder q-mt-md">OR</div>
-    <div class="text-center q-mt-sm">
-      <q-img width="46px" src="assets/social/google.svg"/>
-      <q-img width="46px" class="q-mx-sm" src="assets/social/facebook.svg"/>
-      <q-img width="46px" src="assets/social/twitter.svg"/>
-    </div>
+<!--    <div class="text-center text-weight-bolder q-mt-md">OR</div>-->
+<!--    <div class="text-center q-mt-sm">-->
+<!--      <q-img width="46px" @click="loginGoogle" src="assets/social/google.svg"/>-->
+<!--      <q-img width="46px" class="q-mx-sm" src="assets/social/facebook.svg"/>-->
+<!--      <q-img width="46px" src="assets/social/twitter.svg"/>-->
+<!--    </div>-->
   </div>
 </div>
 </template>

@@ -12,9 +12,9 @@
         </div>
 
         <div class="flex items-center vertical-middle justify-center">
-          <div class="icon-bubble active q-mr-sm">
-            <q-icon size="1.3rem" style="color: #7F56D9" name="o_emoji_events"/>
-          </div>
+<!--          <div class="icon-bubble active q-mr-sm">-->
+<!--            <q-icon size="1.3rem" style="color: #7F56D9" name="o_emoji_events"/>-->
+<!--          </div>-->
 
           <div class="icon-bubble">
            <q-icon size="1.3rem" style="color: #757575" name="o_notifications"/>

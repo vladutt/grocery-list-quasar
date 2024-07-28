@@ -133,15 +133,14 @@ function registerAccount() {
   </q-input>
 
     <q-checkbox v-model="register.terms"
-                :error="errors.terms.length > 0"
                 label="I'm agree to accept "
     > <a href="https://grocermate.ro/terms">
       Terms and Conditions</a> and accept <a href="https://grocermate.ro/privacy">Privacy Policy</a>
-      <template v-slot:error>
-        {{ errors.terms }}
-      </template>
-
     </q-checkbox>
+
+    <p class="text-negative" v-if="errors.terms.length > 0">
+      {{ errors.terms }}
+    </p>
 
   <q-btn @click="registerAccount()" :loading="loading" label="Sign up" color="primary" rounded class="full-width" />
 
@@ -150,12 +149,12 @@ function registerAccount() {
   </div>
 
 
-  <div class="text-center text-weight-bolder q-my-sm">OR</div>
-  <div class="text-center">
-    <q-img width="46px" src="assets/social/google.svg"/>
-    <q-img width="46px" class="q-mx-sm" src="assets/social/facebook.svg"/>
-    <q-img width="46px" src="assets/social/twitter.svg"/>
-  </div>
+<!--  <div class="text-center text-weight-bolder q-my-sm">OR</div>-->
+<!--  <div class="text-center">-->
+<!--    <q-img width="46px" src="assets/social/google.svg"/>-->
+<!--    <q-img width="46px" class="q-mx-sm" src="assets/social/facebook.svg"/>-->
+<!--    <q-img width="46px" src="assets/social/twitter.svg"/>-->
+<!--  </div>-->
 </div>
 </template>
 

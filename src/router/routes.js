@@ -14,6 +14,12 @@ const routes = [
     ]
   },
   {
+    path: '/forgot-password',
+    children: [
+      { path: '', component: () => import('pages/ForgotPassword.vue')}
+    ]
+  },
+  {
     path: '/register',
     component: () => import('pages/RegisterPage.vue'),
   },
@@ -25,7 +31,7 @@ const routes = [
     ]
   },
 
-  // Always leave this as last one,
+  // Always leave this as the last one,
   // but you can also remove it
   {
     path: '/:catchAll(.*)*',

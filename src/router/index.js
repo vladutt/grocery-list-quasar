@@ -29,7 +29,7 @@ export default route(function (/* { store, ssrContext } */) {
 
   Router.beforeEach((to, from, next) => {
 
-    if(LocalStorage.getItem('user') === null && to.fullPath !== '/login' && to.fullPath !== '/register') {
+    if(LocalStorage.getItem('user') === null && to.fullPath !== '/login' && to.fullPath !== '/register' && to.fullPath !== '/forgot-password') {
       next('/login')
     } else {
       next()
