@@ -1,7 +1,7 @@
 {
-  "name": "grocer-mate",
-  "version": "0.0.2",
-  "description": "A Quasar Project",
+  "name": "grocer.mate.yzy",
+  "version": "0.0.34",
+  "description": "Smart shopping list",
   "productName": "Grocer Mate",
   "author": "Vladut Teodor <vladutteodor18@gmail.com>",
   "private": true,
@@ -21,8 +21,7 @@
     "sharp": "^0.33.4",
     "vue": "^3.4.31",
     "vue-i18n": "^9.13.1",
-    "vue-router": "^4.4.0",
-    "vue3-google-login": "^2.0.26"
+    "vue-router": "^4.4.0"
   },
   "devDependencies": {
     "@intlify/vite-plugin-vue-i18n": "^3.4.0",

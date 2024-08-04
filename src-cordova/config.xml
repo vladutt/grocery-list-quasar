@@ -1,8 +1,8 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget id="grocer.mate.yzy" version="0.0.4" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget id="grocer.mate.yzy" version="0.0.34" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
     <name>Grocer Mate</name>
-    <description>A Quasar Project</description>
-    <author email="dev@cordova.apache.org" href="https://vladutteodor.ro">
+    <description>Smart shopping list</description>
+    <author email="contact@vladutteodor.ro" href="https://vladutteodor.ro">
         Vladut Teodor
     </author>
     <content src="index.html" />
@@ -11,6 +11,19 @@
     <allow-navigation href="about:*" />
     <preference name="SplashMaintainAspectRatio" value="true" />
     <platform name="android">
+        <allow-intent href="market:*" />
+        <plugin name="cordova-universal-links-plugin" spec="1.2.1">
+            <variable name="URL_SCHEME" value="grocermate" />
+            <variable name="DEEPLINK_HOST" value="grocermate.ro" />
+            <variable name="DEEPLINK_SCHEME" value="https" />
+        </plugin>
+        <universal-links>
+            <host name="grocermate.ro">
+                <path event="homeEvent" url="/app" />
+                <path event="aboutEvent" url="/about" />
+                <path event="productEvent" url="/product/*" />
+            </host>
+        </universal-links>
         <icon density="ldpi" src="res/android/ldpi.png" />
         <icon density="mdpi" src="res/android/mdpi.png" />
         <icon density="hdpi" src="res/android/hdpi.png" />

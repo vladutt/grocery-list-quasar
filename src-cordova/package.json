@@ -14,14 +14,20 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "cordova-android": "^13.0.0",
-    "cordova-plugin-splashscreen": "^6.0.1"
+    "cordova-plugin-splashscreen": "^6.0.1",
+    "cordova-universal-links-plugin": "^1.2.1"
   },
   "cordova": {
     "platforms": [
       "android"
     ],
     "plugins": {
-      "cordova-plugin-splashscreen": {}
+      "cordova-plugin-splashscreen": {},
+      "cordova-universal-links-plugin": {
+        "URL_SCHEME": "grocermate",
+        "DEEPLINK_HOST": "grocermate.ro",
+        "DEEPLINK_SCHEME": "https"
+      }
     }
   }
 }

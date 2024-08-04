@@ -3,7 +3,8 @@ import {ref} from "vue";
 import {useRouter} from 'vue-router'
 import {api} from "boot/axios";
 import {LocalStorage, useQuasar} from "quasar";
-import {decodeCredential, googleAuthCodeLogin, GoogleLogin} from "vue3-google-login";
+import {decodeCredential} from "vue3-google-login";
+import {getRandomString} from "src/helpers/helpers";
 
 const $q = useQuasar()
 const router = useRouter()
@@ -56,10 +57,10 @@ const callback = (response) => {
   console.log("Handle the userData", userData)
 }
 const loginGoogle = () => {
-  alert(2);
-  googleAuthCodeLogin().then((response) => {
-    console.log("Handle the response", response)
-  })
+  let googleToken = getRandomString(16);
+  LocalStorage.setItem('googleToken', googleToken);
+
+  window.open('https://api.grocermate.ro/google?googleToken='+googleToken, '_blank', 'noopener,noreferrer');
 }
 </script>
 
@@ -103,12 +104,15 @@ const loginGoogle = () => {
     </div>
 
 
-<!--    <div class="text-center text-weight-bolder q-mt-md">OR</div>-->
-<!--    <div class="text-center q-mt-sm">-->
-<!--      <q-img width="46px" @click="loginGoogle" src="assets/social/google.svg"/>-->
+    <div class="text-center text-weight-bolder q-mt-md">OR</div>
+    <div class="text-center q-mt-sm">
+      <q-btn color="black" rounded @click="loginGoogle">
+        <q-img width="46px" class="q-mr-sm"  src="assets/social/google.svg"/>
+        <div>Login with Google</div>
+      </q-btn>
 <!--      <q-img width="46px" class="q-mx-sm" src="assets/social/facebook.svg"/>-->
 <!--      <q-img width="46px" src="assets/social/twitter.svg"/>-->
-<!--    </div>-->
+    </div>
   </div>
 </div>
 </template>

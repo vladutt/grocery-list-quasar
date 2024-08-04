@@ -25,7 +25,9 @@ module.exports = configure(function (/* ctx */) {
       'axios',
       'addressbar-color',
       'bus',
-      'default-options'
+      'default-options',
+      'vue3-google-login',
+      'deeplink'
     ],
 
     // https://v2.quasar.dev/quasar-cli-vite/quasar-config-js#css
@@ -179,6 +181,7 @@ module.exports = configure(function (/* ctx */) {
         'name': 'deployment-target',
         'value': '12.0' // Or any value from 12.0 to 17.5.99
       }],
+      id: 'grocer.mate.yzy'
       // noIosLegacyBuildFlag: true, // uncomment only if you know what you are doing
     },
 
@@ -213,7 +216,7 @@ module.exports = configure(function (/* ctx */) {
       builder: {
         // https://www.electron.build/configuration/configuration
 
-        appId: 'grocermate'
+        appId: 'grocer.mate.yzy'
       }
     },
 
