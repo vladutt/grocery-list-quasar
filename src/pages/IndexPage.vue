@@ -44,28 +44,31 @@
   </div>
 
   <div class="absolute-bottom-right q-mb-xl q-mr-md" style="position: fixed">
-    <q-btn elevated size="20px" class="q-pa-md plus-btn shadow-box shadow-4" icon="add" @click="dialog = !dialog"></q-btn>
+    <q-btn elevated size="20px" class="q-pa-md plus-btn shadow-box shadow-4" icon="add" @click="addItemDialog"></q-btn>
   </div>
 
 
-  <q-dialog v-model="dialog">
+  <q-dialog v-model="dialog" @hide="hideDialog">
     <q-card style="width: 350px">
 
       <q-card-section class="row items-center no-wrap">
-        <q-btn size="sm" v-if="newList.id > 0" icon="delete" color="negative" class="icon-bubble" @click="secondDialog = true" title="Delete"/>
+        <q-btn size="sm" v-if="newList.id > 0 && currentUser" icon="delete" color="negative" class="icon-bubble" @click="secondDialog = true" title="Delete"/>
         <q-space v-if="newList.id > 0"/>
         <h6 class="no-margin text-weight-bold">{{newList.id > 0 ? 'Edit' : 'Create'}} a list</h6>
         <q-space/>
         <q-btn size="sm" icon="close" class="icon-bubble active" @click="dialog = false" title="close"/>
       </q-card-section>
 
-      <q-card-section>
-        <div>
+      <q-card-section v-if="currentUser">
+        <div >
           <q-input bg-color="white" autofocus v-model="newList.name" input-style="border-radius: 20px" outlined label="List name*" class="full-width q-mb-sm"/>
         </div>
 
         <q-btn color="primary" class="full-width border-rounded q-mt-md" style="padding: 13px" @click="saveList()" icon="add">Save</q-btn>
+      </q-card-section>
 
+      <q-card-section v-else>
+        <q-btn color="warning" class="full-width border-rounded q-mt-md" style="padding: 13px" @click="secondDialog = true" icon="add">Remove list</q-btn>
       </q-card-section>
     </q-card>
   </q-dialog>
@@ -74,7 +77,7 @@
   <q-dialog v-model="secondDialog" persistent transition-show="scale" transition-hide="scale">
     <q-card class="bg-teal text-white" style="width: 300px">
       <q-card-actions align="center" class="bg-white text-teal">
-        <q-btn color="negative" flat label="DELETE" @click="deleteItem" />
+        <q-btn color="negative" flat :label="currentUser ? 'DELETE' : 'REMOVE'" @click="deleteItem" />
         <q-space/>
         <q-btn color="primary" label="CANCEL" v-close-popup />
       </q-card-actions>
@@ -96,6 +99,7 @@ defineOptions({
 
 const dialog = ref(false);
 const secondDialog = ref(false);
+const currentUser = ref(false);
 const $q = useQuasar()
 const router = useRouter()
 const newList = ref({id: 0, "name": null, "tag": null});
@@ -140,6 +144,8 @@ function saveList() {
           icon: 'check'
         })
 
+        LocalStorage.setItem('selectedList', response.data.data);
+
         router.push('/grocery-list/'+response.data.data.id+'/'+response.data.data.name)
       })
   }
@@ -154,14 +160,19 @@ function editDialog(index) {
     newList.value.tag = currentList.tag;
     newList.value.id = currentList.id;
 
-    dialog.value = currentList.user_id === LocalStorage.getItem('user').id;
+    currentUser.value = currentList.user_id === LocalStorage.getItem('user').id;
+    dialog.value = true
   }
 
 }
 
 function deleteItem() {
 
-  api.delete('lists/' + newList.value.id)
+  api.delete('lists/' + newList.value.id, {
+    params: {
+      remove: currentUser
+    }
+  })
     .then((response) => {
       $q.notify({
         color: 'positive',
@@ -192,6 +203,12 @@ function getShoppingLists() {
     .then((response) => {
       shoppingLists.value = response.data.data.items;
     })
+}
+
+function addItemDialog() {
+  dialog.value = !dialog.value
+
+  currentUser.value = true;
 }
 
 onMounted(() => {

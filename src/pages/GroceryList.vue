@@ -17,13 +17,14 @@
     <q-card-section class="no-padding q-mt-md" style="margin-bottom: 50px;">
       <q-card-actions class="no-padding">
         <div class="full-width full-height">
+
           <q-list separator v-if="groceryItemList.length">
+            <q-pull-to-refresh @refresh="refresh">
             <transition-group
               appear
               enter-active-class="animated backInLeft"
               leave-active-class="animated backOutLeft slow"
             >
-              <q-pull-to-refresh @refresh="refresh">
               <q-slide-item
                   v-show="!item.deleted"
                   @left="onLeft(index)"
@@ -66,9 +67,8 @@
                     </q-item-section>
                   </q-item>
                 </q-slide-item>
-              </q-pull-to-refresh>
             </transition-group>
-
+            </q-pull-to-refresh>
           </q-list>
 
           <div v-else class="text-center q-pt-xl">
