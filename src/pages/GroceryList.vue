@@ -40,8 +40,8 @@
                 >
 
                   <template v-slot:left>
-                    <q-icon name="done"/>
-                    Done
+                    <q-icon :name="item.done ? 'close' : 'done'"/>
+                    {{ item.done ? 'Uncheck' : 'Got it' }}
                   </template>
                   <template v-slot:right>
                     <q-icon name="delete"/>

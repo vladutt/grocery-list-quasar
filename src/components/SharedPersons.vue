@@ -6,6 +6,7 @@ import { inject } from 'vue'
 import {LocalStorage} from "quasar";
 
 const bus = inject('bus')
+
 const props = defineProps({
   sharedList: Array,
   width: String,
@@ -28,6 +29,10 @@ onMounted(() => {
 
   bus.on('shared-list', (sharedList) => {
     sharedListMutable.value = sharedList;
+  })
+
+  bus.on('share-list', (shareList) => {
+    dialogShare.value = shareList;
   })
 
   createOthers();

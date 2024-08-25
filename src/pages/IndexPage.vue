@@ -26,7 +26,7 @@
            @click="selectList(shoppingList)"
       >
 
-        <h4 class="text-h6 text-weight-bold no-margin">
+        <h4 class="text-h6 text-weight-bold no-margin wrap-text" >
           {{ shoppingList.name }}
         </h4>
         <shared-persons v-if="typeof shoppingList.sharedList !== 'undefined'" :sharedList="shoppingList.sharedList" :other-people="shoppingList.otherPeople ?? 0"/>
@@ -168,9 +168,9 @@ function editDialog(index) {
 
 function deleteItem() {
 
-  api.delete('lists/' + newList.value.id, {
+api.delete('lists/' + newList.value.id, {
     params: {
-      remove: currentUser
+      remove: currentUser.value
     }
   })
     .then((response) => {
@@ -184,11 +184,11 @@ function deleteItem() {
       let indexToDelete = shoppingLists.value.findIndex(item => item.id === newList.value.id);
       shoppingLists.value.splice(indexToDelete, 1);
 
+      LocalStorage.setItem('shoppingLists', shoppingLists.value);
+
       hideDialog();
       secondDialog.value = false;
   })
-
-
 
 }
 
@@ -202,6 +202,7 @@ function getShoppingLists() {
   return api.get('/lists')
     .then((response) => {
       shoppingLists.value = response.data.data.items;
+      LocalStorage.setItem('shoppingLists', shoppingLists.value);
     })
 }
 
@@ -212,6 +213,13 @@ function addItemDialog() {
 }
 
 onMounted(() => {
-  getShoppingLists()
+
+  let cachedShoppingLists = LocalStorage.getItem('shoppingLists');
+
+  if (cachedShoppingLists !== null) {
+    shoppingLists.value = cachedShoppingLists
+  }
+
+  getShoppingLists();
 })
 </script>
